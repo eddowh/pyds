@@ -29,8 +29,7 @@ class DoublyLinkedList(object):
     def __init__(self, lst=None):
         if lst is None:
             pass
-        elif (type(lst) is DoublyLinkedList or
-              type(lst) is list):
+        elif (type(lst) in {DoublyLinkedList, list}):
             for item in lst:
                 self.push(item)
 
@@ -119,8 +118,27 @@ class DoublyLinkedList(object):
         node = self._get_node_at(pos)
         return node.val
 
-    def __getitem__(self, idx):
-        return self.get(idx)
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self.get(key)
+        elif isinstance(key, slice):
+            start, stop, step = key.indices(len(self))
+            # create new list
+            res = DoublyLinkedList()
+            # "jump" to starting index
+            head = self._get_node_at(start)
+            res.push(head.val)
+            start += step
+            cond = (start < stop) if step > 0 else (start > stop)
+            while cond:
+                for _ in range(abs(step)):
+                    head = head.next if step > 0 else head.prev
+                res.push(head.val)
+                start += step
+                cond = (start < stop) if step > 0 else (start > stop)
+            return res
+        else:
+            raise TypeError('Index must be int or slice')
 
     def set(self, pos, val):
         if (pos < 0 or pos >= self.size):
@@ -128,8 +146,15 @@ class DoublyLinkedList(object):
         node = self._get_node_at(pos)
         node.val = val
 
-    def __setitem__(self, pos, val):
-        self.set(pos, val)
+    def __setitem__(self, key, value):
+        if isinstance(key, int):
+            return self.get(key, value)
+        elif isinstance(key, slice):
+            start, stop, step = key.indices(len(self))
+            # TODO
+            pass
+        else:
+            raise TypeError('Index must be int or slice')
 
     def _get_node_at(self, pos):
         """Get node from a certain position.
@@ -188,19 +213,49 @@ class DoublyLinkedList(object):
             head = head.next
 
     def __add__(self, other):
-        if self is other:  # have to clone list
+        if not isinstance(other, DoublyLinkedList):
+            raise TypeError
+        res = self.clone()
+        if self is other:  # have to clone list (can't modify original)
             other = self.clone()
-        self._tail.next = other._head
-        other._head.prev = self._tail
-        self._tail = other._tail
+        res._tail.next = other._head
+        other._head.prev = res._tail
+        res._tail = other._tail
+        return res
+
+    def __mul__(self, n):
+        if not isinstance(n, int):
+            raise TypeError
+        if n < 1:
+            return DoublyLinkedList()
+        res = self.clone()
+        for _ in range(n - 1):
+            res += self
+        return res
+
+    def reverse(self):
+        """Sort the items of the list in place."""
+        cnt = 0
+        head = self._head
+        tail = self._tail
+        while cnt < self.size / 2:
+            head.val, tail.val = tail.val, head.val
+            head = head.next
+            tail = tail.prev
+            cnt += 1
 
     def __reversed__(self):
-        head = self._head
-        reversed_list = DoublyLinkedList()
-        while head is not None:
-            reversed_list.shift(head.val)
-            head = head.next
+        reversed_list = self.clone()
+        reversed_list.reverse()
         return reversed_list
 
     def __nonzero__(self):
         return not self.is_empty()
+
+if __name__ == '__main__':
+    x = DoublyLinkedList([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    print(x)
+    y = [1, 2, 3, 4, 5]
+    print(y[1:2])
+    y[1:4:2] = [99, 100]
+    print(y)
