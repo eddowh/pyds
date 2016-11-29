@@ -27,11 +27,21 @@ class DoublyLinkedList(object):
     _size = 0
 
     def __init__(self, lst=None):
+        """Construct a new linked list.
+
+        This can either clone an existing linked list, or
+        create a new linked list from a Python list.
+        """
         if lst is None:
             pass
         elif (type(lst) in {DoublyLinkedList, list}):
             for item in lst:
                 self.push(item)
+
+    def clear(self):
+        """Empty the list."""
+        self = DoublyLinkedList()
+        assert self.is_empty()
 
     def __str__(self):
         res = ""
@@ -50,6 +60,7 @@ class DoublyLinkedList(object):
         return self.size == 0
 
     def push(self, val):
+        """Append an item to the end of the list."""
         node = Node(val)
         if self._head is None:  # empty list
             self._head = self._tail = node
@@ -61,12 +72,15 @@ class DoublyLinkedList(object):
         self._size += 1
 
     def pop(self):
+        """Remove and return the last item from the list."""
         return self.remove(self.size - 1)
 
     def unshift(self):
+        """Remove and return the first item from the list."""
         return self.remove(0)
 
     def shift(self, val):
+        """Append an item to the front of the list."""
         node = Node(val=val)
         if self._tail is None:  # empty list
             self._head = self._tail = node
@@ -78,6 +92,7 @@ class DoublyLinkedList(object):
         self._size += 1
 
     def insert(self, pos, val):
+        """Insert an item at a certain position in the list."""
         if (pos < 0 or pos > self.size):
             raise IndexError("Out of bounds.")
         if pos == 0:
@@ -93,6 +108,7 @@ class DoublyLinkedList(object):
             self._size += 1
 
     def remove(self, pos):
+        """Remove and return an item at a certain position from the list."""
         if (pos < 0 or pos >= self.size):
             raise IndexError("Out of bounds.")
         node = self._get_node_at(pos)
@@ -113,6 +129,7 @@ class DoublyLinkedList(object):
         self.remove(pos)
 
     def get(self, pos):
+        """Return an item at a certain position in the list."""
         if (pos < 0 or pos >= self.size):
             raise IndexError("Out of bounds.")
         node = self._get_node_at(pos)
@@ -141,6 +158,7 @@ class DoublyLinkedList(object):
             raise TypeError('Index must be int or slice')
 
     def set(self, pos, val):
+        """Set a new value for an item at a certain position in the list."""
         if (pos < 0 or pos >= self.size):
             raise IndexError("Out of bounds.")
         node = self._get_node_at(pos)
@@ -180,9 +198,14 @@ class DoublyLinkedList(object):
         return node
 
     def clone(self):
+        """Copy the object.
+
+        Calls the constructor with this list as the parameter.
+        """
         return DoublyLinkedList(self)
 
     def __eq__(self, other):
+        """Check whether all values in the two lists are equal."""
         if self is other:
             return True
         elif self._size != other._size:
@@ -201,6 +224,7 @@ class DoublyLinkedList(object):
         return not (self == other)
 
     def __contains__(self, value):
+        """Check whether an item is in the list."""
         for item in self:
             if value == item:
                 return True
@@ -213,17 +237,18 @@ class DoublyLinkedList(object):
             head = head.next
 
     def __add__(self, other):
+        """Returns a new list by appending another list to the end."""
         if not isinstance(other, DoublyLinkedList):
             raise TypeError
         res = self.clone()
-        if self is other:  # have to clone list (can't modify original)
-            other = self.clone()
+        other = other.clone()
         res._tail.next = other._head
         other._head.prev = res._tail
         res._tail = other._tail
         return res
 
     def __mul__(self, n):
+        """Returns a new list by appending the same list n times."""
         if not isinstance(n, int):
             raise TypeError
         if n < 1:
@@ -234,7 +259,10 @@ class DoublyLinkedList(object):
         return res
 
     def reverse(self):
-        """Sort the items of the list in place."""
+        """Sort the items of the list in place.
+
+        Given n = size of linked list, the algorithmic runtime is O(n/2)=O(n).
+        """
         cnt = 0
         head = self._head
         tail = self._tail
