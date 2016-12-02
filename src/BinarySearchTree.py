@@ -57,18 +57,32 @@ class Node(object):
                 self.right == other.right
             )
 
+    @staticmethod
+    def get_node_max_depth(n):
+        if n is None:
+            return 0
+        else:
+            ld = Node.get_node_max_depth(n.left)
+            rd = Node.get_node_max_depth(n.right)
+            return max(ld, rd) + 1
+
+    def get_max_depth(self):
+        return Node.get_node_max_depth(self)
+
 
 class BinarySearchTree(object):
-    _root = None
-    _curr = None
-    _size = 0
 
     def __init__(self, lst=None):
         if lst is None:
-            pass
-        elif (type(lst) in {BinarySearchTree, list}):
+            self._root = None
+            self._curr = None
+            self._size = 0
+        elif type(lst) is BinarySearchTree:
             for item in lst:
-                self.insert(item)
+                self.insert(item.get_key(), item.get_value())
+        elif type(lst) is list:
+            for item in lst:
+                self.insert(item[0], item[1])
 
     def __str__(self):
         return BinarySearchTree._print_root(self._root)
