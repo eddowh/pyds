@@ -13,3 +13,5 @@
 - [ ] Documentation for binary search trees
 - [ ] `remove` method for AVL trees
 - [ ] Tests for non-static methods for AVL trees
+- [ ] Tests for binary heap
+- [ ] Comparator input to generalize binary heap (min, max)
