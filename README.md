@@ -12,6 +12,8 @@
 - [ ] More comprehensive tests for binary search trees
 - [ ] Documentation for binary search trees
 - [ ] `remove` method for AVL trees
+- [ ] `remove_max` method for binary heap
 - [ ] Tests for non-static methods for AVL trees
 - [ ] Tests for binary heap
 - [ ] Comparator input to generalize binary heap (min, max)
+- [ ] Tests and documentation for priority queues
